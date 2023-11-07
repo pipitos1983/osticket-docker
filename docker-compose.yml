@@ -1,0 +1,56 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./conf/Dockerfile
+    volumes:
+      - ./upload:/var/www/html
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    ports:
+      - "8888:80"
+    depends_on:
+      - db
+    environment:
+      CONFIG-DBHOST: db
+      CONFIG-DBNAME: ${MYSQL_DATABASE}
+      CONFIG-DBUSER: ${DB_USER}
+      CONFIG-DBPASS: ${DB_PASS}
+    container_name: ${PROJECT}_app
+    hostname: app
+    restart: unless-stopped
+    networks:
+      - appnet
+
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - ./data/db:/var/lib/mysql:rw
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    container_name: ${PROJECT}_db
+    hostname: db
+    networks:
+      - appnet
+
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - "8101:8080"
+    container_name: ${PROJECT}_adminer
+    hostname: adminer
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    name: appnet
+    driver: bridge
+    external: false
