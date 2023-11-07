@@ -1,4 +1,4 @@
-FROM php:8.2-apache-bookworm
+FROM php:8.0-apache-bullseye
 WORKDIR /var/www/html/
 
 RUN apt-get update && apt-get install -y \
