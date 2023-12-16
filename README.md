@@ -2,7 +2,7 @@
 
 - rename .env.example to .env
 - set variables in .env
-- download dictrib and unpack
+- download distrib and unpack
 - run:
 ```
 docker-compose up -d
