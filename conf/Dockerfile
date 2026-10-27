@@ -1,4 +1,4 @@
-FROM php:8.2-apache-bookworm
+FROM php:8.4-apache-bookworm
 WORKDIR /var/www/html/
 
 RUN apt-get update && apt-get install -y \
@@ -24,16 +24,12 @@ RUN apt-get update && apt-get install -y \
       libc-client-dev \
       libkrb5-dev \
       zlib1g-dev && \
-      pecl install apcu && \
-      docker-php-ext-enable apcu &&\
-      docker-php-ext-install mysqli && \
+      pecl channel-update pecl.php.net && \
+      # Использование "echo" автоматически передает пустую строку (нажатие Enter) во все запросы PECL
+      echo | pecl install apcu imap && \
+      docker-php-ext-enable apcu imap && \
+      docker-php-ext-install mysqli bcmath gd zip intl opcache && \
       docker-php-ext-enable mysqli && \
-      docker-php-ext-install bcmath && \
-      docker-php-ext-install gd && \
-      docker-php-ext-install zip && \
-      docker-php-ext-install intl && \
-      docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
-      docker-php-ext-install imap && \
       docker-php-ext-configure opcache --enable-opcache && \
       apt-get clean && \
       rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
